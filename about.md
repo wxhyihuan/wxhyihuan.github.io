@@ -18,5 +18,6 @@ I am a student who is currently studying some clinical data processing. Before, 
 
 [wxh244295043@gamil.com](mailto:wxh244295043@gamil.com)
 
-###Thanks 
-This blog was set up super easily by following [Jekyll](https://github.com/jekyll/jekyll) guide.
+### Thanks 
+
+#### This blog was set up super easily by following [Jekyll](https://github.com/jekyll/jekyll) guide.
