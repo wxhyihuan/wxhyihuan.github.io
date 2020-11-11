@@ -10,8 +10,8 @@ I am a student who is currently studying some clinical data processing. Before, 
 
 ### More Information
 
-1.	Meng, X., Lu, S., Yang, J., Jin, D., Wang, X., &amp; Bai, X., et al. (2017). Metataxonomics reveal vultures as a reservoir for clostridium perfringens. Emerging Microbes &amp; Infections, 6(2), e9. 
-2. Tian, S., Li, Y., Wang, J., Xu, X., Xu, L., &amp; Wang, X., et al. (2013). Drug-likeness analysis of traditional chinese medicines: 2. characterization of scaffold architectures for drug-like compounds, non-drug-like compounds, and natural compounds from traditional chinese medicines. Journal of Cheminformatics, 5(1), 5.
+1.	Meng, X., Lu, S., Yang, J., Jin, D., Wang, X., &amp; Bai, X., et al. (2017). [Metataxonomics reveal vultures as a reservoir for clostridium perfringens](https://pubmed.ncbi.nlm.nih.gov/28223683/). Emerging Microbes &amp; Infections, 6(2), e9. 
+2. Tian, S., Li, Y., Wang, J., Xu, X., Xu, L., &amp; Wang, X., et al. (2013). [Drug-likeness analysis of traditional chinese medicines: 2. characterization of scaffold architectures for drug-like compounds, non-drug-like compounds, and natural compounds from traditional chinese medicines.](https://pubmed.ncbi.nlm.nih.gov/23336706/) Journal of Cheminformatics, 5(1), 5.
 
 
 ### Contact me
