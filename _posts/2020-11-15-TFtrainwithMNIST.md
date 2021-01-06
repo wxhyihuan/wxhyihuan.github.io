@@ -4,8 +4,6 @@ title: TensorFlow 在 MNIST 中的应用（一）
 ---
 
 
-# TensorFlow 在 MNIST 中的应用
-
 ```r 
 library(tensorflow)
 library(keras)

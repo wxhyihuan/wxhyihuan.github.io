@@ -3,9 +3,6 @@ layout: post
 title: Keras基础指南
 ---
 
-
-# Keras基础指南
-
 ## 建立一个简单的模型
 
 ### SEQUENTIAL MODEL

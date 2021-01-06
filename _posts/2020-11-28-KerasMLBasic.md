@@ -3,8 +3,6 @@ layout: post
 title: Keras机器学习的基础
 ---
 
-# Keras机器学习的基础
-
 ## 概览
 本课程包括关于使用Keras进行机器学习的基本概念的教程。
 - [图像分类](#基本的图像分类)：使用fashingmist数据集进行图像分类。
