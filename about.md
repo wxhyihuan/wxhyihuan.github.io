@@ -4,7 +4,7 @@ title: About
 permalink: /about/
 ---
 
-Hello~ Are you all right today? Great~ 
+Welcome! Are you all right today? I am excited that you ar e here.
 
 I am a student who is currently studying some clinical data processing. Before, I mainly studied and engaged in the analysis of microbial genome data. Below are some results of my participation.
 
