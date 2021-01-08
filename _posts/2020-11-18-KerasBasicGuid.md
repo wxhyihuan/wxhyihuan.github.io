@@ -10,7 +10,7 @@ title: Keras基础指南
 在Keras中，可以通过组装层(layer)来构建模型(models)。模型(通常)是层的图形。最常见的模型类型是层的堆栈:序列模型(sequential model)。
 
 下面的代码构建了一个简单的、完全连接([layer_dense])的网络(即一个多层感知器):
-```r 
+```{r}
 model %>% 
 layer_dense(units = 64, activation = 'relu') %>% # Adds a densely-connected layer with 64 units to the model
 layer_dense(units = 64, activation = 'relu') %>% # Add another densely-connected layer with 64 units to the model
@@ -30,7 +30,7 @@ layer_dense(units = 10, activation = 'softmax')  # Add a softmax layer with 10 o
 
 下面的例子使用构造函数参数来实例化一组密集层:
 
-```r 
+```{r}
 layer_dense(units = 64, activation ='sigmoid') 
 # A linear layer with L1 regularization of factor 0.01 applied to the kernel matrix: 
 layer_dense(units = 64, kernel_regularizer = regularizer_l1(0.01)) 
@@ -47,7 +47,7 @@ layer_dense(units = 64, kernel_initializer = c(2.0))
 ### SET UP TRAINING
 
 型构建完成后，通过调用compile方法配置其学习过程:
-```r 
+```{r}
 optimizer = 'adam', 
 loss = 'categorical_crossentropy', 
 metrics = list('accuracy')
@@ -64,7 +64,7 @@ compile接受三个重要参数:
 
 以下是一些配置训练模型的示例:
 
-```r 
+```{r}
 model %>% compile( 
     optimizer = 'adam', 
      # mean squared error 
@@ -84,7 +84,7 @@ model %>% compile(
 
 您可以直接在R矩阵(matrices)和数组(array)(可能从R data.frames创建)上训练keras模型。使用fit方法对训练数据拟合模型:
 
-```r 
+```{r}
 labels <- matrix(rnorm(1000 * 10), nrow = 1000, ncol = 10) 
 model %>% fit( data, labels, epochs = 10, batch_size = 32)
 ```
@@ -97,7 +97,7 @@ fit有三个重要的参数:
 - validation_data: 用来设定作为验证数据的训练数据的分比例。设计的函数确保数据以这样一种方式分离，即它总是针对每个epoch训练数据的相同部分。如果该选项被选择，那么所有的洗牌都是在两个epochs之间的训练样本内完成的。
 
 下面是一个使用validation_data的例子:
-```r 
+```{r}
 labels <- matrix(rnorm(1000 * 10), nrow = 1000, ncol = 10) 
 val_data <- matrix(rnorm(1000 * 32), nrow = 100, ncol = 32) 
 val_labels <- matrix(rnorm(100 * 10), nrow = 100, ncol = 10) 
@@ -135,7 +135,7 @@ sequential 模型是一个简单的层堆栈，不能表示任意模型。使用
 
 下面的例子使用functional API来构建一个简单的、完全连接的网络:
 
-```r 
+```{r}
 predictions <- inputs %>%
  layer_dense(units = 64, activation = 'relu') %>% 
  layer_dense(units = 64, activation = 'relu') %>% 
@@ -167,7 +167,7 @@ fit( data, labels, batch_size = 32, epochs = 5)
 - compute_output_shape(input_shape): 如果您的图层修改了其输入的形状，则应在此处指定形状转换逻辑。 这使Keras可以进行自动形状推断。 如果您不修改输入的形状，则无需实现此方法。
 
 下面是一个执行矩阵乘法的自定义层示例:
-```r 
+```{r}
 CustomLayer <- R6::R6Class("CustomLayer",
 inherit = KerasLayer,
 public = list(
@@ -195,7 +195,7 @@ public = list(
 
 为了在Keras模型中使用自定义层，您还需要创建一个包装器函数，该函数使用create_layer()函数实例化该层。例如:
 
-```r 
+```{r}
 layer_custom <- function(object, output_dim, name = NULL, trainable = TRUE) {
   create_layer(CustomLayer,
     object,
@@ -205,7 +205,7 @@ layer_custom <- function(object, output_dim, name = NULL, trainable = TRUE) {
 }
 ```
 您现在可以像往常一样在模型中使用该层
-```r 
+```{r}
 model %>% 
 layer_dense(units = 32, input_shape = c(32,32)) %>%
 layer_custom(units = 32, input_shape = c(32,32))
@@ -220,7 +220,7 @@ layer_custom(units = 32, input_shape = c(32,32))
 
 自定义模型是通过调用keras_model_custom()传递一个函数来定义的，该函数指定要创建的层和要在向前传递时执行的操作。
 
-```r 
+```{r}
 # define and return a custom model 
 keras_model_custom(name = name, function(self) {
   # create layers we'll need for the call (this code executes once) # note: the layers have to be created on the self object! 
@@ -261,7 +261,7 @@ model %>% fit(data, labels, batch_size = 32, epochs = 5)
 
 要使用回调，请将它传递给模型的fit方法:
 
-```r 
+```{r}
 callbacks <- list(
     callback_early_stopping(patience = 2, monitor = 'val_loss'),
     callback_tensorboard(log_dir = './logs'))
@@ -280,7 +280,7 @@ validation_data = list(val_data, val_labels))
 
 使用save_model_weights_hdf5和 load_model_weights_hdf5 分别用来保存和加载模型的权重。
 
-```r 
+```{r}
 model %>% save_model_weights_tf('my_model/') # Restore the model's state, # this requires a model with the same architecture.
 ```
 
@@ -288,7 +288,7 @@ model %>% save_model_weights_tf('my_model/') # Restore the model's state, # this
 
 模型的配置可以被保存——这样可以在没有任何权重的情况下序列化模型架构。保存的配置可以重新创建并初始化相同的模型，甚至不需要定义原始模型的代码。Keras支持JSON和YAML序列化格式:
 
-```r 
+```{r}
 json_string <- model %>% model_to_json() 
 # Recreate the model (freshly initialized) 
 fresh_model <- model_from_json(json_string) 
@@ -302,7 +302,7 @@ yaml_string <- model %>% model_to_yaml()
 
 可以将整个模型保存到包含权重值、模型配置甚至优化器配置的文件中。这允许您检查模型并在以后恢复训练——从完全相同的状态——而不需要访问原始代码。
 
-```r 
+```{r}
 model %>% save_model_tf('my_model/') # Recreate the exact same model, including weights and optimizer.
 ```
 

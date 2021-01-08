@@ -21,7 +21,7 @@ library(keras)
 ```
 
 ### 导入Fashion MNIST数据集
-```r 
+```{r}
 fashion_mnist <- dataset_fashion_mnist()
 ```
 本指南使用[Fashion MNIST]数据集，包含10个类别的7万张灰度图像。这些图片以低分辨率(28x28像素)展示了衣个别服，如下图所示:
@@ -36,7 +36,7 @@ knitr::include_graphics("https://tensorflow.rstudio.com/tutorials/beginners/basi
 
 我们将使用60,000张图像来训练网络，并使用10,000张图像来评估网络学习分类图像的准确性。你可以直接从Keras访问[Fashion MNIST]。
 
-```r 
+```{r}
 fashion_mnist <- dataset_fashion_mnist()
 
 c(train_images, train_labels) %<-% fashion_mnist$train
@@ -62,7 +62,7 @@ kable_paper("striped", full_width = F)  %>%
 kableExtra::kable_classic_2() 
 ```
 每个图像都映射到单个标签。由于类名不包含在数据集中，所以我们将它们存储在一个向量中，以便稍后绘制图像时使用。
-```r 
+```{r}
 class_names = c('T-shirt/top',              'Trouser',
                 'Pullover',           'Dress',
                 'Coat',               'Sandal',
@@ -73,7 +73,7 @@ class_names = c('T-shirt/top',              'Trouser',
 ### 检视数据
 在训练模型之前，让我们研究一下数据集的格式。如下图所示，训练集中有60000张图像，每张图像用28x28像素表示。
 
-```r 
+```{r}
 # 训练集中有60000张图像，每张图像用28x28像素表示。
 dim(train_images)
 dim(train_labels)
@@ -92,7 +92,7 @@ table(test_labels)
 
 在训练网络之前，必须对数据进行预处理。如果你检查训练集中的第一张图像，你会看到像素值的范围是0到255:
 
-```r 
+```{r}
 library(tidyr)
 library(ggplot2)
 
@@ -117,12 +117,12 @@ ggplot(image_1, aes(x = x, y = y, fill = value)) +
 knitr::include_graphics('https://tensorflow.rstudio.com/tutorials/beginners/basic-ml/tutorial_basic_classification_files/figure-html/unnamed-chunk-9-1.png')
 ```
 在输入到神经网络模型之前，我们将这些值缩放到0到1的范围内。对于这个，我们只需要除以255。重要的是训练集和测试集以相同的方式进行预处理:
-```r 
+```{r}
 train_images <- train_images / 255
 test_images <- test_images / 255
 ```
 显示训练集的前25张图像，并在每张图像下面显示类名。验证数据的格式是否正确，如果没问题，接下来就可以构建和训练模型了。
-```r 
+```{r}
 par(mfcol=c(5,5))
 par(mar=c(0, 0, 1.5, 0), xaxs='i', yaxs='i')
 for (i in 1:25) { 
@@ -147,7 +147,7 @@ knitr::include_graphics('https://tensorflow.rstudio.com/tutorials/beginners/basi
 
 大部分深度学习是将简单的层链接在一起构成的，其中大多数层（例如layer_dense）在训练模型时都有可以设定学习的参数。
 
-```r 
+```{r}
 model <- keras_model_sequential()
 model %>%
   layer_flatten(input_shape = c(28, 28)) %>%
@@ -165,7 +165,7 @@ model %>%
 - 优化器(Optimizer ): 这是模型如何根据它看到的数据和它的损失函数进行更新的方式。
 - 度量标准(Metrics): 用于监控培训和测试步骤。下面的示例使用准确度，即正确分类的图像的比例。
 
-```r 
+```{r}
 model %>% compile(
   optimizer = 'adam', 
   loss = 'sparse_categorical_crossentropy',
@@ -182,7 +182,7 @@ model %>% compile(
 - 我们要求模型对测试集进行预测——在本例中是test_images数组。我们验证预测是否与test_labels数组中的标签相匹配。
 
 要开始训练，调用fit方法-模型对训练数据进行“拟合(fit)”:
-```r 
+```{r}
 model %>% fit(train_images, train_labels, epochs = 5, verbose = 2)
 ## Train on 60000 samples
 ## Epoch 1/5
@@ -202,7 +202,7 @@ model %>% fit(train_images, train_labels, epochs = 5, verbose = 2)
 
 接下来，比较模型在测试数据集中的执行情况:
 
-```r 
+```{r}
 score <- model %>% evaluate(test_images, test_labels, verbose = 0)
 score<-as.list(score)
 cat('Test loss:', score$loss, "\n")
@@ -215,34 +215,34 @@ cat('Test accuracy:', score$acc, "\n")
 #### 作出预测
 
 经过训练的模型，我们可以用它来预测一些图像。
-```r 
+```{r}
 predictions <- model %>% predict(test_images)
 ```
 这里，模型预测了测试集中每个图像的标签。让我们看看第一个预测:
-```r 
+```{r}
 predictions[1, ]
 ## [1] 5.465935e-06 1.288366e-07 3.570543e-06 1.659937e-08 2.075325e-05
 ## [6] 1.836076e-02 2.499909e-06 1.217376e-01 2.614871e-05 8.598431e-01
 ```
 预测结果是一个由10个数字组成的数组。这些数值描述了模型判断该图像对应于10种不同的服装类型的“置信度”。 我们可以看到哪个标签的置信度最高：
-```r 
+```{r}
 which.max(predictions[1, ])
 ## [1] 10
 ```
 由于标签(Labels)是基于0起始的，然而R语言的数据集标签是由1起始的，所以predictions[1, ]预测的标签为9。模型非常确信这张照片是一件踝靴(Ankle boot)。我们可以检查测试标签，看看预测结果是否正确。
-```r 
+```{r}
 test_labels[1]
 ```
 
 或者，我们也可以直接得到类预测:
-```r 
+```{r}
 class_pred <- model %>% predict_classes(test_images)
 class_pred[1:20]
 ###  [1] 9 2 1 1 6 1 4 6 5 7 4 5 5 3 4 1 2 2 8 0
 ```
 
 让我们用几幅图来说明模型的预测。正确的预测标签为绿色，错误的预测标签为红色。
-```r 
+```{r}
 par(mfcol=c(5,5))
 par(mar=c(0, 0, 1.5, 0), xaxs='i', yaxs='i')
 for (i in 1:25) { 
@@ -269,7 +269,7 @@ knitr::include_graphics('https://tensorflow.rstudio.com/tutorials/beginners/basi
 
 最后，利用训练好的模型对单个图像进行预测。
 
-```r 
+```{r}
 # 从测试数据集中获取一个图像
 # 注意保持崎岖数据的维度信息，这是模型所期望的，利用drop = FALSE帮助关掉返回向量
 str(test_images)
@@ -279,7 +279,7 @@ dim(img)
 # [1]  1 28 28
 ```
 现在预测图像:
-```r 
+```{r}
 predictions <- model %>% predict(img)
 predictions
 ##              [,1]         [,2]         [,3]         [,4]         [,5]
@@ -290,7 +290,7 @@ predictions
 ```
 *predict*返回一个包含子列表的列表，每个子列表对应数据批中的某图像。在这里的批处理中获取我们的(唯一的)图像的预测:
 
-```r 
+```{r}
 # 因为标签是基于0的，所以减去1
 prediction <- predictions[1, ] - 1
 which.max(prediction)
@@ -315,7 +315,7 @@ class_pred
 
 [波士顿房价]数据可以直接从keras获得。
 
-```r 
+```{r}
 library(keras)
 library(tfdatasets)
 
@@ -330,7 +330,7 @@ c(test_data, test_labels) %<-% boston_housing$test
 
 这个数据集比我们目前使用的其他数据集要小得多:它总共有506个例子，分别在404个训练示例和102个测试示例之间划分:
 
-```r 
+```{r}
 paste0("Training entries: ", length(train_data), ", labels: ", length(train_labels))
 ## [1] "Training entries: 5252, labels: 404"
 ```
@@ -364,14 +364,14 @@ paste0("Training entries: ", length(train_data), ", labels: ", length(train_labe
 - 人口中处于较低地位的百分比。
 
 输入数据的每个特性互相使用不同的标度存储。有些特征用0到1之间的比例表示，有些特征用1到12之间的范围表示，有些特征用0到100之间的范围表示，以此类推。
-```r 
+```{r}
 # 显示样品特征，注意不同的标度
 train_data[1, ] 
 ##  [1]   1.23247   0.00000   8.14000   0.00000   0.53800   6.14200  91.70000
 ##  [8]   3.97690   4.00000 307.00000  21.00000 396.90000  18.72000
 ```
 为数据添加列名，以便更好地检查数据。
-```r 
+```{r}
 library(dplyr)
 
 column_names <- c('CRIM', 'ZN', 'INDUS', 'CHAS', 'NOX', 'RM', 'AGE', 
@@ -391,7 +391,7 @@ test_df <- test_data %>%
 #### 标签
 
 这些标签是的房价单位：千美元。
-```r 
+```{r}
 train_labels[1:10]
 ##  [1] 15.2 42.3 50.0 21.1 17.7 18.5 11.3 15.6 15.6 14.4
 ```
@@ -401,7 +401,7 @@ train_labels[1:10]
 建议对使用不同标度和范围的特征数据进行标准化。虽然模型在没有特征归一化的情况下可能也会收敛，但这会使训练变得更加困难，并且会使得到的模型更加依赖于输入中使用的单元的选择。
 
 我们将使用在*tfdatasets*包中实现的*feature_spec*接口进行标准化。*feature_columns*接口允许对表数据进行其他常见的预处理操作。
-```r 
+```{r}
 library(tfdatasets)
 
 spec <- feature_spec(train_df, label ~ . ) %>% 
@@ -422,7 +422,7 @@ spec
 
 我们可以看看这个*spec*创建的密集层的输出:
 
-```r 
+```{r}
 layer <- layer_dense_features(
   feature_columns = dense_features(spec), 
   dtype = tf$float32
@@ -435,7 +435,7 @@ layer(train_df)
 
 接下来我们构建模型。这里我们将使用Keras functional API——这是使用feature_spec API时推荐的方式。注意，我们只需要从我们刚刚创建的*spec*中传递*dense_features*。
 
-```r 
+```{r}
 input <- layer_input_from_dataset(train_df %>% select(-label))
 
 output <- input %>% 
@@ -450,7 +450,7 @@ summary(model)
 ```
 
 然后我们用以下方法编译模型:
-```r 
+```{r}
 model %>% 
   compile(
     loss = "mse",
@@ -459,7 +459,7 @@ model %>%
   )
 ```
 我们将把模型构建代码包装成一个函数，以便能够在不同的实验中重用它。请记住，Keras *fit*会就地修改模型。
-```r 
+```{r}
 build_model <- function() {
   input <- layer_input_from_dataset(train_df %>% select(-label))
   
@@ -485,7 +485,7 @@ build_model <- function() {
 #### 训练模型
 
 对模型进行了500个epochs训练，并在keras_training_history对象中记录了训练和验证准确性。 我们还展示了如何使用自定义回调方法，将每个epochs的默认训练输出替换为一个点。
-```r 
+```{r}
 # 通过每完一个epochs打印一个点显示来训练进度。
 print_dot_callback <- callback_lambda(
   on_epoch_end = function(epoch, logs) {
@@ -507,7 +507,7 @@ history1 <- model1 %>% fit(
 ```
 现在，我们使用存储在*history*变量中的指标来可视化模型的训练进度。我们想用这些数据来确定在模型停止进步之前需要训练多久。
 
-```r 
+```{r}
 library(ggplot2)
 plot(history1)
 ```
@@ -516,7 +516,7 @@ plot(history1)
 knitr::include_graphics('https://tensorflow.rstudio.com/tutorials/beginners/basic-ml/tutorial_basic_regression_files/figure-html/unnamed-chunk-13-1.png')
 ```
 这张图表显示，在大约200个epochs之后，模型几乎没有什么改进。让我们更新*fit*方法，当验证分数没有提高时自动停止训练。我们将使用一个回调来测试每个epoch的训练条件。如果经过了一定数量的epoch，没有显示出改进，它会自动停止训练。
-```r 
+```{r}
 # patience parameter是要检查改进的时期数。
 early_stop <- callback_early_stopping(monitor = "val_loss", patience = 20)
 
@@ -563,7 +563,7 @@ knitr::include_graphics('https://s3.ax1x.com/2020/12/25/rWN4UK.png')
 
 让我们看看模型在测试集上的表现如何：
 
-```r 
+```{r}
 c(loss, mae) %<-% (model1 %>% evaluate(test_df %>% select(-label), test_df$label, verbose = 0))
 paste0("Mean absolute error on test set: $", sprintf("%.2f", mae * 1000))
 # [1] "Mean absolute error on test set: $2903.54"
@@ -577,7 +577,7 @@ paste0("Mean absolute error on test set: $", sprintf("%.2f", mae2 * 1000))
 
 最后，使用测试集中的数据预测一些房价：
 
-```r 
+```{r}
 model<-model2
 test_predictions <- model2 %>% predict(test_df %>% select(-label))
 test_predictions[ , 1]
@@ -625,7 +625,7 @@ test_predictions[ , 1]
 
 先启动并加载Keras以及其他一些必需的库。
 
-```r 
+```{r}
 library(keras)
 library(dplyr)
 library(ggplot2)
@@ -639,7 +639,7 @@ library(purrr)
 
 如果要使用[pins](https://github.com/rstudio/pins) ，请按照这里的[教程](https://rstudio.github.io/pins/articles/boards-kaggle.html)注册Kaggle画板。然后，您可以运行：
 
-```r 
+```{r}
 library(pins)
 board_register("kaggle", token = "/home/wangxh/Soft/kaggle.json")
 paths <- pins::pin_get("nltkdata/movie-review", "kaggle")
@@ -647,7 +647,7 @@ paths <- pins::pin_get("nltkdata/movie-review", "kaggle")
 path <- paths[1]
 ```
 现在，使用包中的*read_csv*函数将其读取到R中readr。
-```r 
+```{r}
 df <- readr::read_csv(path)
 head(df)
 ## # A tibble: 6 x 6
@@ -664,7 +664,7 @@ head(df)
 
 让我们花一点时间来理解数据的格式。数据集有6万行，每行代表电影评论。该text列具有实际评论，并且tag 代表向我们显示了该评论的分类情绪。数据集里大约一半的评论是负面的(neg)，另一半是正面的(pos)。
 
-```r 
+```{r}
 df$text[1]
 ## [1] "films adapted from comic books have had plenty of success , whether they're about superheroes ( batman , superman , spawn ) , or geared toward kids ( casper ) or the arthouse crowd ( ghost world ) , but there's never really been a comic book like from hell before ."
 
@@ -697,13 +697,13 @@ str(df)
 
 让我们将数据集分为训练集和测试集两部分：
 
-```r 
+```{r}
 training_id <- sample.int(nrow(df), size = nrow(df)*0.8)
 training <- df[training_id,]
 testing <- df[-training_id,]
 ```
 了解每个评论中单词数量的大致分布情况也很有用。
-```r 
+```{r}
 df$text %>% 
   strsplit(" ") %>% 
   sapply(length) %>% 
@@ -724,7 +724,7 @@ df$text %>%
 
 在本教程中，我们将使用第二种方法。现在，让我们定义文本向量化层(Text Vectorization layer)，它将负责获取字符串输入并将其转换为张量(Tensor)。
 
-```r 
+```{r}
 num_words <- 10000
 max_length <- 50
 text_vectorization <- layer_text_vectorization(
@@ -734,14 +734,14 @@ text_vectorization <- layer_text_vectorization(
 ```
 现在，我们需要*adapt*文本向量化层。adapt层将了解数据集中的去重复词汇，并为每个单词分配一个整数值。
 
-```r 
+```{r}
 text_vectorization %>% 
   adapt(df$text)
 ```
 
 您可以看到文本矢量化层如何转换其输入数据的：
 
-```r 
+```{r}
 text_vectorization(matrix(df$text[1], ncol = 1))
 ## tf.Tensor(
 ## [[  68 2835   30  359 1662   33   91 1056    5  632  631  321   41 7803
@@ -759,7 +759,7 @@ text_vectorization(matrix(df$text[1], ncol = 1))
 
 在此示例中，输入数据由单词索引数组组成。要预测的标签为0或1(Neg或者Pos)。让我们为这个问题建立一个模型：
 
-```r 
+```{r}
 input <- layer_input(shape = c(1), dtype = "string")
 
 output <- input %>% 
@@ -797,7 +797,7 @@ model <- keras_model(input, output)
 
 现在，配置模型中使用的优化器和损失函数：
 
-```r 
+```{r}
 model %>% compile(
   optimizer = 'adam',
   loss = 'binary_crossentropy',
@@ -809,7 +809,7 @@ model %>% compile(
 
 模型训练使用包含512个样本的小批量数据集进行20个epochs，也就是对x_train和y_train张量中的所有样本进行20次迭代。在训练时，在验证集的10,000个样本上监控模型的损失和准确性:
 
-```r 
+```{r}
 history <- model %>% fit(
   training$text,
   as.numeric(training$tag == "pos"),
@@ -845,7 +845,7 @@ history <- model %>% fit(
 
 让我们看看这个模型是如何运行的。将返回两个值。损失值(一个表示我们的误差的数字，越低的值越好)和准确性。
 
-```r 
+```{r}
 results <- model %>% evaluate(testing$text, as.numeric(testing$tag == "pos"), verbose = 0)
 results
 ##      loss  accuracy
@@ -856,7 +856,7 @@ results
 ### 创建一个随时间变化的准确性和损失图表
 
 *fit*返回一个*keras_training_history*对象，它的*metrics*包含训练期间记录的丢失和度量值( loss and metrics values)。你可以方便地使用它来绘制损失和指标曲线:
-```r 
+```{r}
 plot(history)
 ```
 ```{r fig7, echo=FALSE,out.width="60%", fig.cap ='训练模型的收敛过程和时间2',fig.align='center'} 
@@ -880,7 +880,7 @@ knitr::include_graphics('https://tensorflow.rstudio.com/tutorials/beginners/basi
 
 先启动并加载Keras以及其他一些必需的库。
 
-```r 
+```{r}
 library(keras)
 library(tfhub)
 library(tfds)
@@ -891,7 +891,7 @@ library(tfdatasets)
 IMDB数据集可在[IMDB reviews]或[tfd]上获得。Keras打包的文件已经经过了预处理，因此对本教程没有用处。
 
 以下代码下载IMDB数据集到您的机器:
-```r 
+```{r}
 imdb <- tfds_load(
   "imdb_reviews:1.0.0", 
   split = list("train[:60%]", "train[-40%:]", "test"), 
@@ -912,7 +912,7 @@ summary(imdb)
 *tfds_load*返回一个TensorFlow数据集，是表示元素序列的抽象，其中每个元素由一个或多个组件组成。
 
 要访问数据集的单个元素，您可以使用:
-```r 
+```{r}
 first <- imdb[[1]] %>% 
   dataset_batch(1) %>% # Used to get only the first example
   reticulate::as_iterator() %>% 
@@ -959,7 +959,7 @@ str(first)
 
 注意：如果大陆网络无法使用https访问TensorFlow Hub中的模型，我们可以先尝试通过浏览器将模型数据下载到本地(如[tf2-preview_gnews-swivel-20dim_1.tar.gz])，然后解压压缩包到指定路径(如：/tmp/tensorflow_hub/tf2-preview_gnews-swivel-20dim_1)，在调用模型时，便可以直接调用本地的模型数据了()。
 
-```r 
+```{r}
 embedding_layer <- layer_hub(handle = "https://tfhub.dev/google/tf2-preview/gnews-swivel-20dim/1")
 embedding_layer(first[[1]])
 
@@ -975,7 +975,7 @@ embedding_layer(first[[1]])
 ```
 
 现在让我们构建完整的模型:
-```r 
+```{r}
 model <- keras_model_sequential() %>% 
   layer_hub(
     handle = "https://tfhub.dev/google/tf2-preview/gnews-swivel-20dim/1",
@@ -1023,7 +1023,7 @@ summary(model)
 
 现在，配置模型中使用的优化器和损失函数：
 
-```r 
+```{r}
 model %>% 
   compile(
     optimizer = "adam",
@@ -1036,7 +1036,7 @@ model %>%
 
 模型训练使用包含512个样本的小批量数据集进行20个epochs，也就是对x_train和y_train张量中的所有样本进行20次迭代。在训练时，在验证集的10,000个样本上监控模型的损失和准确性:
 
-```r 
+```{r}
 history<-model %>% fit(
     imdb[[1]] %>% dataset_shuffle(10000) %>% dataset_batch(512),
     epochs = 20,
@@ -1050,7 +1050,7 @@ history<-model %>% fit(
 
 让我们看看这个模型是如何运行的。将返回两个值。损失值(一个表示我们的误差的数字，越低的值越好)和准确性。
 
-```r 
+```{r}
 results <- model %>% 
   evaluate(imdb[[3]] %>%  dataset_batch(512), verbose = 0)
 results
@@ -1062,7 +1062,7 @@ results
 ### 准确性和损失函数的图表
 
 *fit*返回一个*keras_training_history*对象，它的*metrics*包含训练期间记录的丢失和度量值( loss and metrics values)。你可以方便地使用它来绘制损失和指标曲线:
-```r 
+```{r}
 plot(history)
 ```
 ```{r fig8, echo=FALSE,out.width="60%", fig.cap ='训练模型的收敛过程和时间3',fig.align='center'} 
@@ -1096,7 +1096,7 @@ knitr::include_graphics('https://s3.ax1x.com/2020/12/26/rhVyPP.png')
 
 先启动并加载Keras以及其他一些必需的库。
 
-```r 
+```{r}
 library(keras)
 library(dplyr)
 library(ggplot2)
@@ -1106,7 +1106,7 @@ library(tibble)
 
 ### 下载IMDB数据集
 
-```r 
+```{r}
 num_words <- 1000
 imdb <- dataset_imdb(num_words = num_words)
 #https://storage.googleapis.com/tensorflow/tf-keras-datasets/imdb.npz
@@ -1117,7 +1117,7 @@ c(test_data, test_labels) %<-% imdb$test
 
 对列表进行多次热编码意味着将它们转换为0和1的向量。 具体而言，这意味着例如将序列[3，5]转换为一个10,000维向量，该向量除索引3和5是1外，其余的全是零。
 
-```r 
+```{r}
 multi_hot_sequences <- function(sequences, dimension) {
   multi_hot <- matrix(0, nrow = length(sequences), ncol = dimension)
   for (i in 1:length(sequences)) {
@@ -1131,7 +1131,7 @@ test_data <- multi_hot_sequences(test_data, num_words)
 ```
 让我们看一下其中一个多次热编码点矢量。 由于单词索引是按频率排序，因此可以预期在索引0附近有更多的1值，如我们在该图中所看到的：
 
-```r 
+```{r}
 first_text <- data.frame(word = 1:num_words, value = train_data[1, ])
 ggplot(first_text, aes(x = word, y = value)) +
   geom_line() +
@@ -1158,7 +1158,7 @@ knitr::include_graphics('https://tensorflow.rstudio.com/tutorials/beginners/basi
 
 #### 建立基础模型
 
-```r 
+```{r}
 baseline_model <- 
   keras_model_sequential() %>%
   layer_dense(units = 16, activation = "relu", input_shape = num_words) %>%
@@ -1207,7 +1207,7 @@ baseline_history <- baseline_model %>% fit(
 
 让我们创建一个包含较少隐藏单位的模型，与我们刚刚创建的基础模型进行比较:
 
-```r 
+```{r}
 smaller_model <- 
   keras_model_sequential() %>%
   layer_dense(units = 4, activation = "relu", input_shape = num_words) %>%
@@ -1239,7 +1239,7 @@ summary(smaller_model)
 ```
 并使用相同的数据训练模型:
 
-```r 
+```{r}
 smaller_history <- smaller_model %>% fit(
   train_data,
   train_labels,
@@ -1259,7 +1259,7 @@ smaller_history <- smaller_model %>% fit(
 
 接下来，让我们在这个基准上添加一个容量更大的网络，远远超出了问题所能保证的范围:
 
-```r 
+```{r}
 bigger_model <- 
   keras_model_sequential() %>%
   layer_dense(units = 512, activation = "relu", input_shape = num_words) %>%
@@ -1289,7 +1289,7 @@ summary(bigger_model)
 ## ________________________________________________________________________________
 ```
 并使用相同的数据训练模型:
-```r 
+```{r}
 bigger_history <- bigger_model %>% fit(
   train_data,
   train_labels,
@@ -1309,7 +1309,7 @@ bigger_history <- bigger_model %>% fit(
 
 现在，让我们绘制3种模型的损耗曲线。较小的网络模型开始过拟合的时间比基线模型稍晚，并且一旦开始过拟合，它的性能下降得更慢。请注意，较大的网络模型仅在一个epoch之后就开始过度拟合，而且是严重过度拟合。网络模型具有的容量越多，将能够更快地对训练数据进行建模（导致较低的训练损失），但它越容易过拟合（导致训练和验证损失之间存在较大差异）。
 
-```r 
+```{r}
 compare_cx <- data.frame(
   baseline_train = baseline_history$metrics$loss,
   baseline_val = baseline_history$metrics$val_loss,
@@ -1345,7 +1345,7 @@ knitr::include_graphics('https://s3.ax1x.com/2020/12/26/rhbVuF.png')
 
 在Keras中，权重正则化是通过将权重正则化实例传递给层来添加的。现在让我们将L2权重正则化添加到基线模型中。
 
-```r 
+```{r}
 l2_model <- 
   keras_model_sequential() %>%
   layer_dense(units = 16, activation = "relu", input_shape = num_words,
@@ -1378,7 +1378,7 @@ regularizer_l2(l = 0.001)表示该层权重矩阵中的每一个系数都会使�
 
 以下是L2正则化惩罚的影响:
 
-```r 
+```{r}
 compare_cx <- data.frame(
   baseline_train = baseline_history$metrics$loss,
   baseline_val = baseline_history$metrics$val_loss,
@@ -1407,7 +1407,7 @@ knitr::include_graphics('https://s3.ax1x.com/2020/12/26/rhbv26.png')
 在Keras中，您可以通过*layer_dropout*在网络模型中引入丢包，该丢包将立即应用于图层的输出。
 
 让我们在IMDB网络中添加两个dropout层，看看它们在减少过拟合方面做得如何:
-```r 
+```{r}
 dropout_model <- 
   keras_model_sequential() %>%
   layer_dense(units = 16, activation = "relu", input_shape = num_words) %>%
@@ -1433,7 +1433,7 @@ dropout_history <- dropout_model %>% fit(
 ```
 它的效果如何?添加dropout是对基线模型的明显改进。
 
-```r 
+```{r}
 compare_cx <- data.frame(
   baseline_train = baseline_history$metrics$loss,
   baseline_val = baseline_history$metrics$val_loss,
@@ -1489,7 +1489,7 @@ knitr::include_graphics('https://s3.ax1x.com/2020/12/26/rhOF3t.png')
 
 我们将使用[MNIST]数据集训练我们的模型来演示保存训练后的权重。为了加快这些演示的运行速度，只使用前1000个示例:
 
-```r 
+```{r}
 library(keras)
 
 mnist <- dataset_mnist()
@@ -1512,7 +1512,7 @@ test_images <- test_images / 255
 
 让我们构建一个简单的模型，我们将使用它来演示保存和加载权重。
 
-```r 
+```{r}
 # 返回一个短序列模型
 create_model <- function() {
   model <- keras_model_sequential() %>%
@@ -1566,7 +1566,7 @@ summary(model)
 
 SavedModel格式是一种序列化模型的方法。以这种格式保存的模型可以使用*load_model_t()*恢复，并且与TensorFlow服务兼容。[SavedModel指南]详细介绍了如何服务/检查SavedModel。下面的部分演示了保存和恢复模型的步骤。下面的部分演示了保存和恢复模型的步骤。
 
-```r 
+```{r}
 model <- create_model()
 
 model %>% fit(train_images, train_labels, epochs = 5, verbose = 2)
@@ -1585,7 +1585,7 @@ summary(new_model)
 
 Keras使用HDF5标准提供了基本的保存格式。
 
-```r 
+```{r}
 model <- create_model()
 model %>% fit(train_images, train_labels, epochs = 5, verbose = 2)
 
@@ -1639,7 +1639,7 @@ callback_model_checkpoint是执行此任务的回调函数。
 
 训练模型并给它传递callback_model_checkpoint:
 
-```r 
+```{r}
 checkpoint_path <- "checkpoints/cp.ckpt"
 
 # Create checkpoint callback
@@ -1662,14 +1662,14 @@ model %>% fit(
 ```
 检查创建的文件:
 
-```r 
+```{r}
 list.files(dirname(checkpoint_path))
 ```
 创建一个新的未经训练的模型。当仅从权重恢复模型时，您必须拥有与原始模型具有相同架构的模型。由于它是相同的模型架构，我们可以共享权重，尽管它是模型的不同实例。
 
 现在重建一个新的，未经训练的模型，并在测试集上评估它。未经训练的模型将在概率水平(~7% 精确度)执行:
 
-```r 
+```{r}
 fresh_model <- create_model()
 fresh_model %>% evaluate(test_images, test_labels, verbose = 0)
 ##     loss accuracy
@@ -1679,7 +1679,7 @@ fresh_model %>% evaluate(test_images, test_labels, verbose = 0)
 
 然后从最新的检查点(epoch 10)加载权重，并重新评估:
 
-```r 
+```{r}
 fresh_model %>% load_model_weights_tf(filepath = checkpoint_path)
 fresh_model %>% evaluate(test_images, test_labels, verbose = 0)
 ##      loss  accuracy
@@ -1691,7 +1691,7 @@ fresh_model %>% evaluate(test_images, test_labels, verbose = 0)
 
 另外，您可以决定仅保存最佳模型，默认情况下，最佳模型定义为验证损失最小。 有关更多信息，请参见[callback_model_checkpoint的文档]。
 
-```r 
+```{r}
 checkpoint_path <- "checkpoints/cp.ckpt"
 
 # Create checkpoint callback
@@ -1730,7 +1730,7 @@ list.files(dirname(checkpoint_path))
 
 您了解了如何将权重加载到模型中。手动保存它们使用save_model_weights_tf函数也一样简单。
 
-```r 
+```{r}
 # 保存权重
 model %>% save_model_weights_tf("checkpoints/cp.ckpt")
 
