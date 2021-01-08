@@ -3,11 +3,11 @@ layout: post
 title: TensorFlow 在 MNIST 中的应用（一）
 ---
 
-# 是大家
+### 是大家
 
 
 
-```r
+```{r }
 library(tensorflow)
 library(keras)
 library(dplyr)
