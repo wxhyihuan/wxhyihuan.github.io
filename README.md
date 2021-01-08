@@ -1,4 +1,4 @@
-## The wxhyihuan of WEBSPACE
+## The WEBSPACE
 
 WEBSPACE is a blog run by wxhyihuan. The template from this blog was forked from [Jekyll](https://github.com/barryclark/jekyll-now).
 
